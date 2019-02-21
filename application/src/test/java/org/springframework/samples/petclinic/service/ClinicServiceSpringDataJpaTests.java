@@ -1,12 +1,9 @@
 package org.springframework.samples.petclinic.service;
 
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
-import org.junit.Ignore;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -19,7 +16,6 @@ import org.springframework.samples.petclinic.model.Visit;
 import org.springframework.samples.petclinic.util.EntityUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.PostgreSQLContainer;
 
@@ -151,7 +147,7 @@ public class ClinicServiceSpringDataJpaTests {
 
   @Test
   @Transactional
-  @Ignore // ignored just to show UI tests coverage impact
+  @Disabled // ignored just to show UI tests coverage impact
   public void shouldInsertPetIntoDatabaseAndGenerateId() {
     Owner owner6 = this.clinicService.findOwnerById(6);
     int found = owner6.getPets().size();
@@ -175,7 +171,7 @@ public class ClinicServiceSpringDataJpaTests {
 
   @Test
   @Transactional
-  @Ignore // ignored just to show UI tests coverage impact
+  @Disabled // ignored just to show UI tests coverage impact
   public void shouldUpdatePetName() throws Exception {
     Pet pet7 = this.clinicService.findPetById(7);
     String oldName = pet7.getName();
@@ -201,7 +197,7 @@ public class ClinicServiceSpringDataJpaTests {
 
   @Test
   @Transactional
-  @Ignore // ignored just to show UI tests coverage impact
+  @Disabled // ignored just to show UI tests coverage impact
   public void shouldAddNewVisitForPet() {
     Pet pet7 = this.clinicService.findPetById(7);
     int found = pet7.getVisits().size();
