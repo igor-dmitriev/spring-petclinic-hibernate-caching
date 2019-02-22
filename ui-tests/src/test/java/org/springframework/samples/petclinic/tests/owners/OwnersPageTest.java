@@ -3,11 +3,13 @@ package org.springframework.samples.petclinic.tests.owners;
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.ElementsCollection;
+import com.codeborne.selenide.Selenide;
 import com.codeborne.selenide.WebDriverRunner;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.openqa.selenium.By;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.springframework.samples.petclinic.util.TestContainerUtil;
 import org.testcontainers.containers.BrowserWebDriverContainer;
@@ -19,14 +21,14 @@ import java.time.Duration;
 
 import static com.codeborne.selenide.Condition.exactText;
 import static com.codeborne.selenide.Condition.text;
-import static com.codeborne.selenide.Selectors.byLinkText;
+import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
 import static com.codeborne.selenide.Selenide.open;
+import static org.openqa.selenium.By.linkText;
 
 public class OwnersPageTest {
-
   private static DockerComposeContainer dockerComposeContainer = new DockerComposeContainer(new File("../docker-compose.yml"))
       .withLocalCompose(true)
       .withExposedService("application_1", 8080, Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(3)))
@@ -61,7 +63,7 @@ public class OwnersPageTest {
     $("#username").val("test");
     $("#password").val("testovich");
     $(byText("Login")).click();
-    $(byLinkText("FIND OWNERS")).click();
+    $(linkText("FIND OWNERS")).click();
     $("#owner-last-name-input").val("F");
     $(byText("Find Owner")).click();
     $$("#owners-table tbody tr").shouldHaveSize(1);
@@ -90,7 +92,7 @@ public class OwnersPageTest {
 
     $(byText("Add Owner")).click();
 
-    $(byText("Owner Information")).shouldBe(Condition.visible);
+    $(byText("Owner Information")).shouldBe(visible);
     $$("#owners-information-table tbody").shouldHaveSize(1);
 
     ElementsCollection newOwners = $$("#owners-information-table tbody tr td");
