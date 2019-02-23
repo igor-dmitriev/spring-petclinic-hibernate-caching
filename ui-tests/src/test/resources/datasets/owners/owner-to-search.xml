@@ -1,0 +1,8 @@
+<dataset>
+    <pet_owners id="1000" first_name="George" last_name="Franklin" address="110 W. Liberty St." city="Madison" telephone="6085551023" />
+    <pet_owners id="1001" first_name="Betty" last_name="Davis" address="638 Cardinal Ave." city="Sun Prairie" telephone="6085551749" />
+
+    <pets id="1000" name="Leo" birth_date="2010-09-07" type_id="1" owner_id="1000"/>
+
+    <types id="1" name="cat"/>
+</dataset>

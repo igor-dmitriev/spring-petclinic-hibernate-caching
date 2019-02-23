@@ -1,0 +1,6 @@
+<dataset>
+    <pet_owners id="1000" first_name="Jean" last_name="Coleman" address="105 N. Lake St." city="Monona" telephone="6085552654" />
+
+    <types id="1" name="cat"/>
+    <types id="2" name="dog"/>
+</dataset>
