@@ -51,7 +51,7 @@ After starting the server you can install and run the client from the `frontend`
 
 2. Allure report
 - `./gradlew clean build testUi allureGeneratedReport`
-- open `/build/allure/report`
+- open `/build/reports/allure-report/index.html` from Intellij IDEA (Open in Browser)
 
 3. Code coverage
 - Launch SonarQube in Docker `docker run -d -p 9000:9000 -p 9002:9002 sonarqube`
