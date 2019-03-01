@@ -59,7 +59,7 @@ After starting the server you can install and run the client from the `frontend`
 - open SonarQube in a browser `http://localhost:9000`
 
 # Local run
-- Test classes has to extend `org.springframework.samples.petclinic.tests.LocalUiTest`
+- Test classes have to extend `org.springframework.samples.petclinic.tests.LocalUiTest`
 - Spring Boot app, database and frontend must be launched
 
 # CI run
