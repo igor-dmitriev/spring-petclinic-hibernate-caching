@@ -2,8 +2,9 @@ package org.springframework.samples.petclinic.util;
 
 import com.codeborne.selenide.Configuration;
 
-import org.junit.rules.TestWatcher;
-import org.junit.runner.Description;
+import org.junit.jupiter.api.extension.AfterTestExecutionCallback;
+import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.VncRecordingContainer;
 
@@ -13,7 +14,7 @@ import java.time.format.DateTimeFormatter;
 
 import static java.time.format.DateTimeFormatter.ofPattern;
 
-public class FailingUiTestsWatcher extends TestWatcher {
+public class VideoRecordingExtension implements BeforeTestExecutionCallback, AfterTestExecutionCallback {
 
   private final GenericContainer targetContainer;
 
@@ -21,12 +22,12 @@ public class FailingUiTestsWatcher extends TestWatcher {
   private static final String FILE_NAME_PATTERN = "%s-%s-%s.flv";
   private static final DateTimeFormatter DATE_TIME_FORMATTER = ofPattern("dd-MM-YYYY__HH-mm-ss");
 
-  public FailingUiTestsWatcher(GenericContainer targetContainer) {
+  public VideoRecordingExtension(GenericContainer targetContainer) {
     this.targetContainer = targetContainer;
   }
 
   @Override
-  protected void starting(Description description) {
+  public void beforeTestExecution(ExtensionContext context) {
     vncRecordingContainer = new VncRecordingContainer(targetContainer)
         .withVncPassword("secret")
         .withVncPort(5900);
@@ -34,19 +35,22 @@ public class FailingUiTestsWatcher extends TestWatcher {
   }
 
   @Override
-  protected void failed(Throwable e, Description description) {
+  public void afterTestExecution(ExtensionContext context) {
+    try {
+      context.getExecutionException().ifPresent(throwable -> handleFailedTest(context));
+    } finally {
+      vncRecordingContainer.stop();
+    }
+  }
+
+  private void handleFailedTest(ExtensionContext context) {
     String fileName = String.format(
         FILE_NAME_PATTERN,
-        description.getTestClass().getSimpleName(),
-        description.getMethodName(),
+        context.getRequiredTestClass().getSimpleName(),
+        context.getRequiredTestMethod().getName(),
         DATE_TIME_FORMATTER.format(LocalDateTime.now())
     );
     File path = new File(Configuration.reportsFolder + "/" + fileName);
     vncRecordingContainer.saveRecordingToFile(path);
-  }
-
-  @Override
-  protected void finished(Description description) {
-    vncRecordingContainer.stop();
   }
 }

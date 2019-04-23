@@ -3,9 +3,11 @@ package org.springframework.samples.petclinic.tests;
 import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.WebDriverRunner;
 
+import org.junit.jupiter.api.extension.RegisterExtension;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.springframework.samples.petclinic.util.JmxUtil;
 import org.springframework.samples.petclinic.util.TestContainerUtil;
+import org.springframework.samples.petclinic.util.VideoRecordingExtension;
 import org.testcontainers.containers.BrowserWebDriverContainer;
 import org.testcontainers.containers.DockerComposeContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
@@ -37,6 +39,9 @@ public abstract class CiUiTest extends TestDataSource {
       dockerComposeContainer.stop();
     }));
   }
+
+  @RegisterExtension
+  public static VideoRecordingExtension videoRecordingExtension = new VideoRecordingExtension(chrome);
 
   @Override
   protected String jdbcHost() {
