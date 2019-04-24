@@ -56,9 +56,4 @@ public class PetsPageTest extends CiUiTest {
     pets.get(1).shouldHave(text("2019/02/02"));
     pets.get(2).shouldHave(text("dog"));
   }
-
-  @Test
-  public void test() {
-    Assertions.assertTrue(true);
-  }
 }
