@@ -7,6 +7,7 @@ import com.github.database.rider.core.api.dataset.DataSet;
 import com.github.database.rider.core.api.dataset.SeedStrategy;
 import com.github.database.rider.junit5.DBUnitExtension;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.samples.petclinic.steps.MainSteps;
@@ -54,5 +55,10 @@ public class PetsPageTest extends CiUiTest {
     pets.get(0).shouldHave(text("Dan"));
     pets.get(1).shouldHave(text("2019/02/02"));
     pets.get(2).shouldHave(text("dog"));
+  }
+
+  @Test
+  public void test() {
+    Assertions.assertTrue(true);
   }
 }
