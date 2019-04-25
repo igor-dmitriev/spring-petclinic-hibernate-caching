@@ -1,78 +1,85 @@
 package org.springframework.samples.petclinic.tests.owners;
 
-import com.codeborne.selenide.Condition;
+import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.ElementsCollection;
-import com.codeborne.selenide.Selenide;
-import com.codeborne.selenide.logevents.SelenideLogger;
-import com.github.database.rider.core.api.connection.ConnectionHolder;
-import com.github.database.rider.core.api.dataset.DataSet;
-import com.github.database.rider.core.api.dataset.SeedStrategy;
-import com.github.database.rider.junit5.DBUnitExtension;
+import com.codeborne.selenide.WebDriverRunner;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.samples.petclinic.steps.MainSteps;
-import org.springframework.samples.petclinic.steps.OwnersSteps;
-import org.springframework.samples.petclinic.tests.CiUiTest;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.springframework.samples.petclinic.util.TestContainerUtil;
+import org.testcontainers.containers.BrowserWebDriverContainer;
+import org.testcontainers.containers.DockerComposeContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
 
-import io.qameta.allure.selenide.AllureSelenide;
+import java.io.File;
+import java.time.Duration;
 
+import static com.codeborne.selenide.Condition.exactText;
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
+import static com.codeborne.selenide.Selenide.open;
 import static org.openqa.selenium.By.linkText;
 
-@ExtendWith(DBUnitExtension.class)
-public class OwnersPageTest extends CiUiTest {
+public class OwnersPageTest {
 
-  public ConnectionHolder connectionHolder = () -> dataSource().getConnection();
-  private MainSteps mainSteps = new MainSteps(homePath(), apiLoginPath());
-  private OwnersSteps ownersSteps = new OwnersSteps();
+  private static DockerComposeContainer dockerComposeContainer = new DockerComposeContainer(new File("../docker-compose.yml"))
+      .withLocalCompose(true)
+      .withExposedService("application_1", 8080, Wait.forListeningPort().withStartupTimeout(Duration.ofMinutes(3)))
+      .withExposedService("postgres_1", 5432);
 
-  @Test
-  @DataSet(
-      value = {
-          "datasets/test_user.xml",
-          "datasets/owners/owner-to-search.xml"
-      },
-      executeScriptsBefore = "datasets/cleanup.sql",
-      strategy = SeedStrategy.INSERT
-  )
-  void shouldSearchOwnersByLastName() {
-    mainSteps.fastLogin();
-    mainSteps.openFindOwnersTab();
-    ownersSteps.searchOwnersByLastName("F");
-    ownersSteps.assertOwnersTableHasSize(1);
-    ownersSteps.assertOwnersTableHasData(
-        1,
-        "George Franklin",
-        "110 W. Liberty St.",
-        "Madison",
-        "6085551023",
-        "Leo"
-    );
+  private BrowserWebDriverContainer chrome;
+
+  @BeforeEach
+  void setUp() {
+    chrome = new BrowserWebDriverContainer().withCapabilities(DesiredCapabilities.chrome());
+    TestContainerUtil.linkContainersNetworks(dockerComposeContainer, chrome, "application_1");
+    chrome.start();
+    Configuration.baseUrl = "http://application:8080";
+    WebDriverRunner.setWebDriver(chrome.getWebDriver());
+  }
+
+  @AfterEach
+  void tearDown() {
+    chrome.stop();
+  }
+
+  static {
+    dockerComposeContainer.start();
+    Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+      dockerComposeContainer.stop();
+    }));
   }
 
   @Test
-  @DataSet(
-      value = {
-          "datasets/test_user.xml"
-      },
-      executeScriptsBefore = "datasets/cleanup.sql",
-      strategy = SeedStrategy.INSERT
-  )
-  public void shouldCreateOwner() {
-    SelenideLogger.addListener("allure", new AllureSelenide().savePageSource(false)); // tracing
-
-    /*open("/");
+  void shouldSearchOwnersByLastName() {
+    open("/");
     $("#username").val("test");
     $("#password").val("testovich");
-    $("#login-button").click();*/
-    mainSteps.fastLogin();
-    Selenide.open("/");
+    $(byText("Login")).click();
     $(linkText("FIND OWNERS")).click();
+    $("#owner-last-name-input").val("F");
+    $(byText("Find Owner")).click();
+    $$("#owners-table tbody tr").shouldHaveSize(1);
+    ElementsCollection owners = $$("#owners-table tbody tr td");
+    owners.get(0).shouldHave(exactText("George Franklin"));
+    owners.get(1).shouldHave(exactText("110 W. Liberty St."));
+    owners.get(2).shouldHave(exactText("Madison"));
+    owners.get(3).shouldHave(exactText("6085551023"));
+    owners.get(4).shouldHave(exactText("Leo"));
+  }
+
+  @Test
+  public void shouldCreateOwner() {
+    open("/");
+    $("#username").val("test");
+    $("#password").val("testovich");
+    $("#login-button").click();
+    $(byText("FIND OWNERS")).click();
 
     $(byText("Add Owner")).click();
     $("#firstname-input").val("test-name");
@@ -91,49 +98,5 @@ public class OwnersPageTest extends CiUiTest {
     newOwners.get(1).shouldHave(text("test address"));
     newOwners.get(2).shouldHave(text("test city"));
     newOwners.get(3).shouldHave(text("555543434"));
-
-    SelenideLogger.removeListener("allure");
-  }
-
-  @Test
-  @DataSet(
-      value = {
-          "datasets/test_user.xml",
-          "datasets/owners/owner-to-edit.xml"
-      },
-      executeScriptsBefore = "datasets/cleanup.sql",
-      strategy = SeedStrategy.INSERT
-  )
-  public void shouldEditOwner() {
-   /* open("/");
-
-    $("#username").val("test");
-    $("#password").val("testovich");
-    $("#login-button").click();
-
-    $(byText("FIND OWNERS")).click();
-
-    $("#owner-last-name-input").val("Dmitriev");
-    $(byText("Find Owner")).click();*/
-
-    mainSteps.fastLogin();
-    Selenide.open("/#/owners/1000"); // fast open
-    $(byText("Edit Owner")).click();
-
-    $("#firstname-input").val("newfirstname");
-    $("#lastname-input").val("newlastname");
-    $("#address-input").val("new street");
-    $("#city-input").val("new city");
-    $("#telephone-input").val("1111");
-
-    $(byText("Update Owner")).click();
-
-    $(byText("Owner Information")).shouldBe(Condition.visible);
-    $$("#owners-information-table tbody").shouldHaveSize(1);
-    ElementsCollection owners = $$("#owners-information-table tbody tr td");
-    owners.get(0).shouldHave(text("newfirstname newlastname"));
-    owners.get(1).shouldHave(text("new street"));
-    owners.get(2).shouldHave(text("new city"));
-    owners.get(3).shouldHave(text("1111"));
   }
 }

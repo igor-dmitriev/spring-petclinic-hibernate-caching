@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 //@Profile("!prod") https://stackoverflow.com/questions/25427684/using-profile-in-spring-boot
 @Conditional(NonProdCondition.class)
-public class UiTestController {
+public class TestController {
 
   @GetMapping("/test")
   public String test() {
