@@ -1,7 +1,9 @@
 package org.springframework.samples.petclinic.tests.owners;
 
+import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selenide;
+import com.codeborne.selenide.logevents.SelenideLogger;
 import com.github.database.rider.core.api.connection.ConnectionHolder;
 import com.github.database.rider.core.api.dataset.DataSet;
 import com.github.database.rider.core.api.dataset.SeedStrategy;
@@ -12,30 +14,39 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.samples.petclinic.steps.MainSteps;
 import org.springframework.samples.petclinic.steps.OwnersSteps;
 import org.springframework.samples.petclinic.tests.CiUiTest;
-import org.springframework.samples.petclinic.util.LoginUtil;
+
+import io.qameta.allure.selenide.AllureSelenide;
 
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
 import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.$$;
-import static com.codeborne.selenide.Selenide.open;
+import static org.openqa.selenium.By.linkText;
 
 @ExtendWith(DBUnitExtension.class)
 public class OwnersPageTest extends CiUiTest {
 
   public ConnectionHolder connectionHolder = () -> dataSource().getConnection();
-  private LoginUtil loginUtil = new LoginUtil(homePath(), apiLoginPath());
   private MainSteps mainSteps = new MainSteps(homePath(), apiLoginPath());
   private OwnersSteps ownersSteps = new OwnersSteps();
 
   @Test
+  @DataSet(
+      value = {
+          "datasets/test_user.xml",
+          "datasets/owners/owner-to-search.xml"
+      },
+      executeScriptsBefore = "datasets/cleanup.sql",
+      strategy = SeedStrategy.INSERT
+  )
   void shouldSearchOwnersByLastName() {
     mainSteps.fastLogin();
     mainSteps.openFindOwnersTab();
     ownersSteps.searchOwnersByLastName("F");
+    ownersSteps.assertOwnersTableHasSize(1);
     ownersSteps.assertOwnersTableHasData(
-        2,
+        1,
         "George Franklin",
         "110 W. Liberty St.",
         "Madison",
@@ -45,12 +56,23 @@ public class OwnersPageTest extends CiUiTest {
   }
 
   @Test
+  @DataSet(
+      value = {
+          "datasets/test_user.xml"
+      },
+      executeScriptsBefore = "datasets/cleanup.sql",
+      strategy = SeedStrategy.INSERT
+  )
   public void shouldCreateOwner() {
-    open("/");
+    SelenideLogger.addListener("allure", new AllureSelenide().savePageSource(false)); // tracing
+
+    /*open("/");
     $("#username").val("test");
     $("#password").val("testovich");
-    $("#login-button").click();
-    $(byText("FIND OWNERS")).click();
+    $("#login-button").click();*/
+    mainSteps.fastLogin();
+    Selenide.open("/");
+    $(linkText("FIND OWNERS")).click();
 
     $(byText("Add Owner")).click();
     $("#firstname-input").val("test-name");
@@ -69,6 +91,8 @@ public class OwnersPageTest extends CiUiTest {
     newOwners.get(1).shouldHave(text("test address"));
     newOwners.get(2).shouldHave(text("test city"));
     newOwners.get(3).shouldHave(text("555543434"));
+
+    SelenideLogger.removeListener("allure");
   }
 
   @Test
@@ -81,7 +105,7 @@ public class OwnersPageTest extends CiUiTest {
       strategy = SeedStrategy.INSERT
   )
   public void shouldEditOwner() {
-    /*open("/");
+   /* open("/");
 
     $("#username").val("test");
     $("#password").val("testovich");
@@ -90,13 +114,10 @@ public class OwnersPageTest extends CiUiTest {
     $(byText("FIND OWNERS")).click();
 
     $("#owner-last-name-input").val("Dmitriev");
-    $(byText("Find Owner")).click();
+    $(byText("Find Owner")).click();*/
 
-    $(linkText("Igor Dmitriev")).click();*/
-    Selenide.open("/");
-    loginUtil.fastLogin();
-    Selenide.open("/#/owners/1000");
-
+    mainSteps.fastLogin();
+    Selenide.open("/#/owners/1000"); // fast open
     $(byText("Edit Owner")).click();
 
     $("#firstname-input").val("newfirstname");
@@ -107,7 +128,7 @@ public class OwnersPageTest extends CiUiTest {
 
     $(byText("Update Owner")).click();
 
-    $(byText("Owner Information")).shouldBe(visible);
+    $(byText("Owner Information")).shouldBe(Condition.visible);
     $$("#owners-information-table tbody").shouldHaveSize(1);
     ElementsCollection owners = $$("#owners-information-table tbody tr td");
     owners.get(0).shouldHave(text("newfirstname newlastname"));
