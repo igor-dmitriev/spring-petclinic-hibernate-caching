@@ -2,7 +2,10 @@ package org.springframework.samples.petclinic.tests;
 
 import com.codeborne.selenide.Configuration;
 import com.codeborne.selenide.WebDriverRunner;
+import com.codeborne.selenide.logevents.SelenideLogger;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.springframework.samples.petclinic.util.JmxUtil;
@@ -14,6 +17,8 @@ import org.testcontainers.containers.wait.strategy.Wait;
 
 import java.io.File;
 import java.time.Duration;
+
+import io.qameta.allure.selenide.AllureSelenide;
 
 public abstract class CiUiTest extends TestDataSource {
   private static DockerComposeContainer dockerComposeContainer = new DockerComposeContainer(new File("../docker-compose.yml"))
@@ -36,6 +41,16 @@ public abstract class CiUiTest extends TestDataSource {
       dockerComposeContainer.stop();
       chrome.stop();
     }));
+  }
+
+  @BeforeEach
+  void setUp() {
+    SelenideLogger.addListener("allure", new AllureSelenide().savePageSource(false)); // tracing
+  }
+
+  @AfterEach
+  void tearDown() {
+    SelenideLogger.removeListener("allure");
   }
 
   @RegisterExtension

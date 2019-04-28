@@ -3,7 +3,6 @@ package org.springframework.samples.petclinic.tests.owners;
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.ElementsCollection;
 import com.codeborne.selenide.Selenide;
-import com.codeborne.selenide.logevents.SelenideLogger;
 import com.github.database.rider.core.api.connection.ConnectionHolder;
 import com.github.database.rider.core.api.dataset.DataSet;
 import com.github.database.rider.core.api.dataset.SeedStrategy;
@@ -14,8 +13,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.samples.petclinic.steps.MainSteps;
 import org.springframework.samples.petclinic.steps.OwnersSteps;
 import org.springframework.samples.petclinic.tests.CiUiTest;
-
-import io.qameta.allure.selenide.AllureSelenide;
 
 import static com.codeborne.selenide.Condition.text;
 import static com.codeborne.selenide.Condition.visible;
@@ -63,9 +60,7 @@ public class OwnersPageTest extends CiUiTest {
       executeScriptsBefore = "datasets/cleanup.sql",
       strategy = SeedStrategy.INSERT
   )
-  public void shouldCreateOwner() {
-    SelenideLogger.addListener("allure", new AllureSelenide().savePageSource(false)); // tracing
-
+  void shouldCreateOwner() {
     /*open("/");
     $("#username").val("test");
     $("#password").val("testovich");
@@ -91,8 +86,6 @@ public class OwnersPageTest extends CiUiTest {
     newOwners.get(1).shouldHave(text("test address"));
     newOwners.get(2).shouldHave(text("test city"));
     newOwners.get(3).shouldHave(text("555543434"));
-
-    SelenideLogger.removeListener("allure");
   }
 
   @Test
@@ -104,7 +97,7 @@ public class OwnersPageTest extends CiUiTest {
       executeScriptsBefore = "datasets/cleanup.sql",
       strategy = SeedStrategy.INSERT
   )
-  public void shouldEditOwner() {
+  void shouldEditOwner() {
    /* open("/");
 
     $("#username").val("test");
