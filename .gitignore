@@ -31,3 +31,5 @@ out/
 
 ### Frontend ###
 frontend/package-lock.json
+frontend/node_modules
+jspm_packages

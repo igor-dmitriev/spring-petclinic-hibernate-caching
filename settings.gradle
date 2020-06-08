@@ -1,3 +1,2 @@
-rootProject.name = 'spring-petclinic-reactjs-ui-tests'
-include 'application'
-include 'ui-tests'
+rootProject.name = 'spring-petclinic-hibernate-caching'
+include 'backend'
