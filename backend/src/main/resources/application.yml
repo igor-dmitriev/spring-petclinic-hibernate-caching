@@ -1,4 +1,7 @@
 spring:
+  profiles:
+    active: ${SPRING_PROFILE:dev}
+
   datasource:
     url: jdbc:p6spy:postgresql://localhost:5432/petclinic
     username: petclinic
@@ -26,7 +29,7 @@ spring:
             non_contextual_creation: true
     open-in-view: false
   flyway:
-    locations: ["classpath:db/migration/ddl", "classpath:db/migration/dml"]
+    locations: ["classpath:db/migration/shared", "classpath:db/migration/prod"]
 
 security:
   token:

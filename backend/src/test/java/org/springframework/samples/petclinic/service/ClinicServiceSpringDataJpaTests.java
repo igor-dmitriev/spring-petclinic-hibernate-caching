@@ -1,9 +1,12 @@
 package org.springframework.samples.petclinic.service;
 
-import org.junit.jupiter.api.BeforeAll;
+import com.github.database.rider.core.api.connection.ConnectionHolder;
+import com.github.database.rider.core.api.dataset.DataSet;
+import com.github.database.rider.core.api.dataset.SeedStrategy;
+import com.github.database.rider.spring.api.DBRider;
+
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -14,10 +17,10 @@ import org.springframework.samples.petclinic.model.PetType;
 import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.samples.petclinic.model.Visit;
 import org.springframework.samples.petclinic.util.EntityUtils;
+import org.springframework.samples.petclinic.util.PostgresqlDbBaseTest;
 import org.springframework.stereotype.Service;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
-import org.testcontainers.containers.PostgreSQLContainer;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -45,35 +48,25 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Igor Dmitriev
  */
 
-@ExtendWith(SpringExtension.class)
+@DBRider
+@Disabled
+@ActiveProfiles("test")
 @DataJpaTest(includeFilters = @ComponentScan.Filter(Service.class))
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class ClinicServiceSpringDataJpaTests {
+public class ClinicServiceSpringDataJpaTests extends PostgresqlDbBaseTest {
 
-  private static PostgreSQLContainer<?> POSTGESQL_CONTAINER = new PostgreSQLContainer<>("postgres:9.6.1")
-      .withUsername("test_login")
-      .withPassword("test_password")
-      .withDatabaseName("petclinic")
-      .withExposedPorts(5432);
-
-  static {
-    POSTGESQL_CONTAINER.start();
-    Runtime.getRuntime().addShutdownHook(new Thread(() -> POSTGESQL_CONTAINER.stop()));
-  }
-
-  @BeforeAll
-  public static void setUpClass() {
-    String urlPattern = "jdbc:p6spy:postgresql://%s:%s/petclinic";
-    String url = String.format(urlPattern, POSTGESQL_CONTAINER.getContainerIpAddress(), POSTGESQL_CONTAINER.getMappedPort(5432));
-    System.setProperty("spring.datasource.url", url);
-    System.setProperty("spring.datasource.username", "test_login");
-    System.setProperty("spring.datasource.password", "test_password");
-  }
+  @SuppressWarnings("unused")
+  public ConnectionHolder connectionHolder = () -> dataSource.getConnection();
 
   @Autowired
   protected ClinicService clinicService;
 
   @Test
+  @DataSet(
+      value = {"datasets/clinic-service.xml"},
+      executeScriptsBefore = "datasets/cleanup.sql",
+      strategy = SeedStrategy.INSERT
+  )
   public void shouldFindOwnersByLastName() {
     Collection<Owner> owners = this.clinicService.findOwnerByLastName("Davis");
     assertThat(owners.size()).isEqualTo(2);
@@ -83,8 +76,13 @@ public class ClinicServiceSpringDataJpaTests {
   }
 
   @Test
+  @DataSet(
+      value = {"datasets/clinic-service.xml"},
+      executeScriptsBefore = "datasets/cleanup.sql",
+      strategy = SeedStrategy.INSERT
+  )
   public void shouldFindSingleOwnerWithPet() {
-    Owner owner = this.clinicService.findOwnerById(1);
+    Owner owner = this.clinicService.findOwnerById(100);
     assertThat(owner.getLastName()).startsWith("Franklin");
     assertThat(owner.getPets().size()).isEqualTo(1);
     assertThat(owner.getPets().get(0).getType()).isNotNull();
@@ -93,6 +91,11 @@ public class ClinicServiceSpringDataJpaTests {
 
   @Test
   @Transactional
+  @DataSet(
+      value = {"datasets/clinic-service.xml"},
+      executeScriptsBefore = "datasets/cleanup.sql",
+      strategy = SeedStrategy.INSERT
+  )
   public void shouldInsertOwner() {
     Collection<Owner> owners = this.clinicService.findOwnerByLastName("Schultz");
     int found = owners.size();
@@ -112,8 +115,13 @@ public class ClinicServiceSpringDataJpaTests {
 
   @Test
   @Transactional
+  @DataSet(
+      value = {"datasets/clinic-service.xml"},
+      executeScriptsBefore = "datasets/cleanup.sql",
+      strategy = SeedStrategy.INSERT
+  )
   public void shouldUpdateOwner() {
-    Owner owner = this.clinicService.findOwnerById(1);
+    Owner owner = this.clinicService.findOwnerById(100);
     String oldLastName = owner.getLastName();
     String newLastName = oldLastName + "X";
 
@@ -121,19 +129,29 @@ public class ClinicServiceSpringDataJpaTests {
     this.clinicService.saveOwner(owner);
 
     // retrieving new name from database
-    owner = this.clinicService.findOwnerById(1);
+    owner = this.clinicService.findOwnerById(100);
     assertThat(owner.getLastName()).isEqualTo(newLastName);
   }
 
   @Test
+  @DataSet(
+      value = {"datasets/clinic-service.xml"},
+      executeScriptsBefore = "datasets/cleanup.sql",
+      strategy = SeedStrategy.INSERT
+  )
   public void shouldFindPetWithCorrectId() {
-    Pet pet7 = this.clinicService.findPetById(7);
+    Pet pet7 = this.clinicService.findPetById(106);
     assertThat(pet7.getName()).startsWith("Samantha");
     assertThat(pet7.getOwner().getFirstName()).isEqualTo("Jean");
 
   }
 
   @Test
+  @DataSet(
+      value = {"datasets/clinic-service.xml"},
+      executeScriptsBefore = "datasets/cleanup.sql",
+      strategy = SeedStrategy.INSERT
+  )
   public void shouldFindAllPetTypes() {
     Collection<PetType> petTypes = this.clinicService.findPetTypes();
 
@@ -183,10 +201,15 @@ public class ClinicServiceSpringDataJpaTests {
   }
 
   @Test
+  @DataSet(
+      value = {"datasets/clinic-service.xml"},
+      executeScriptsBefore = "datasets/cleanup.sql",
+      strategy = SeedStrategy.INSERT
+  )
   public void shouldFindVets() {
     Collection<Vet> vets = this.clinicService.findVets();
 
-    Vet vet = EntityUtils.getById(vets, Vet.class, 3);
+    Vet vet = EntityUtils.getById(vets, Vet.class, 102);
     assertThat(vet.getLastName()).isEqualTo("Douglas");
     assertThat(vet.getNrOfSpecialties()).isEqualTo(2);
     assertThat(vet.getSpecialties().get(0).getName()).isEqualTo("dentistry");
@@ -211,13 +234,18 @@ public class ClinicServiceSpringDataJpaTests {
   }
 
   @Test
-  public void shouldFindVisitsByPetId() throws Exception {
-    Collection<Visit> visits = this.clinicService.findVisitsByPetId(7);
+  @DataSet(
+      value = {"datasets/clinic-service.xml"},
+      executeScriptsBefore = "datasets/cleanup.sql",
+      strategy = SeedStrategy.INSERT
+  )
+  public void shouldFindVisitsByPetId() {
+    Collection<Visit> visits = this.clinicService.findVisitsByPetId(106);
     assertThat(visits.size()).isEqualTo(2);
     Visit[] visitArr = visits.toArray(new Visit[visits.size()]);
     assertThat(visitArr[0].getPet()).isNotNull();
     assertThat(visitArr[0].getDate()).isNotNull();
-    assertThat(visitArr[0].getPet().getId()).isEqualTo(7);
+    assertThat(visitArr[0].getPet().getId()).isEqualTo(106);
   }
 
 }

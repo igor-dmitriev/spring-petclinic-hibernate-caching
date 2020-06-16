@@ -24,7 +24,7 @@
                 class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
             <FileNamePattern>${LOG_HOME}/${LOG_FILE_NAME}.%i.log.zip</FileNamePattern>
             <MinIndex>1</MinIndex>
-            <MaxIndex>100</MaxIndex>
+            <MaxIndex>21</MaxIndex>
         </rollingPolicy>
 
         <triggeringPolicy
@@ -40,12 +40,15 @@
     </appender>
 
     <logger name="org.hibernate" level="WARN"/>
+    <logger name="org.hibernate.cache" level="DEBUG"/>
+    <logger name="org.hibernate.stat" level="DEBUG"/>
     <logger name="org.springframework" level="WARN"/>
+    <logger name="net.sf.ehcache" level="WARN"/>
     <logger name="org.flywaydb" level="WARN"/>
     <logger name="com.zaxxer.hikari" level="INFO"/>
     <logger name="org.apache" level="WARN"/>
 
-    <root level="DEBUG">
+    <root level="INFO">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="ASYNC"/>
     </root>

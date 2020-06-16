@@ -1,0 +1,10 @@
+spring:
+  flyway:
+    locations: ["classpath:db/migration/shared"]
+
+  jpa:
+    properties:
+      hibernate:
+        javax:
+          cache:
+            uri: classpath://jcache.xml

@@ -16,7 +16,7 @@
 package org.springframework.samples.petclinic.repository;
 
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.Repository;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.PetType;
 
@@ -31,7 +31,7 @@ import java.util.List;
  * @author Sam Brannen
  * @author Michael Isvy
  */
-public interface PetRepository extends Repository<Pet, Integer> {
+public interface PetRepository extends CrudRepository<Pet, Integer> {
 
   /**
    * Retrieve all {@link PetType}s from the data store.
@@ -48,13 +48,6 @@ public interface PetRepository extends Repository<Pet, Integer> {
    * @return the {@link Pet} if found
    */
   Pet findById(int id);
-
-  /**
-   * Save a {@link Pet} to the data store, either inserting or updating it.
-   *
-   * @param pet the {@link Pet} to save
-   */
-  void save(Pet pet);
 
 }
 

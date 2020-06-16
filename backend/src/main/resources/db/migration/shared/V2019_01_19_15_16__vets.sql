@@ -5,5 +5,6 @@ CREATE SEQUENCE IF NOT EXISTS vets_seq
 CREATE TABLE IF NOT EXISTS vets (
   id         INT DEFAULT nextval('vets_seq') PRIMARY KEY,
   first_name VARCHAR(32),
-  last_name  VARCHAR(32)
+  last_name  VARCHAR(32),
+  is_vip     BOOLEAN NOT NULL default false
 );
