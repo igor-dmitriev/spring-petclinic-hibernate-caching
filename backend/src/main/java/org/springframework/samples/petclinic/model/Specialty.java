@@ -15,6 +15,11 @@
  */
 package org.springframework.samples.petclinic.model;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Immutable;
+
+import javax.persistence.Cacheable;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
@@ -25,6 +30,9 @@ import javax.persistence.Table;
  * @author Igor Dmitriev
  */
 @Entity
+@Cacheable
+@Immutable
+@Cache(usage = CacheConcurrencyStrategy.READ_ONLY, region = "specialties")
 @Table(name = "specialties")
 public class Specialty extends NamedEntity {
 

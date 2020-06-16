@@ -16,9 +16,12 @@
 package org.springframework.samples.petclinic.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.QueryHints;
 import org.springframework.samples.petclinic.model.Vet;
 
 import java.util.List;
+
+import javax.persistence.QueryHint;
 
 /**
  * Repository class for <code>Vet</code> domain objects All method names are compliant with Spring Data naming conventions so this
@@ -36,6 +39,9 @@ public interface VetRepository extends JpaRepository<Vet, Integer> {
    *
    * @return a <code>Collection</code> of <code>Vet</code>s
    */
+  @QueryHints(value = {
+      @QueryHint(name = "org.hibernate.cacheable", value = "true")
+  })
   List<Vet> findAll();
 
 }

@@ -25,7 +25,7 @@ public class DynamicEnvironmentProperties {
     Properties properties = new Properties();
     boolean isStaging = Environments.STAGING_ENV.equals(springProfile);
     if (false) {
-      // properties.setProperty("CACHE_REGION_FACTORY", org.redisson.hibernate.RedissonRegionFactory.class.getCanonicalName());
+      properties.setProperty("CACHE_REGION_FACTORY", org.redisson.hibernate.RedissonRegionFactory.class.getCanonicalName());
     }
     return properties;
   }

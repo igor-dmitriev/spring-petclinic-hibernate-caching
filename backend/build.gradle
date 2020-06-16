@@ -20,6 +20,11 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
+    implementation 'org.ehcache:ehcache'
+    implementation 'org.hibernate:hibernate-jcache'
+
+    implementation 'org.redisson:redisson-hibernate-53:3.13.0'
+
     implementation 'org.postgresql:postgresql'
     implementation 'org.flywaydb:flyway-core'
     implementation 'p6spy:p6spy:3.8.5'

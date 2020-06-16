@@ -23,10 +23,59 @@ spring:
         show_sql: false
         use_sql_comments: true
         format_sql: true
+        query:
+          immutable_entity_update_query_handling_mode: exception
         jdbc:
           time_zone: "UTC"
           lob:
             non_contextual_creation: true
+
+        cache:
+          use_second_level_cache: true
+          use_reference_entries: true
+          use_query_cache: true
+          region:
+            factory_class: ${CACHE_REGION_FACTORY:org.hibernate.cache.jcache.JCacheRegionFactory}
+
+          redisson:
+            config: "redisson.yaml"
+            fallback: true
+            entity:
+              eviction:
+                max_entries: 10000
+                expiration:
+                  time_to_live: 120000
+                  max_idle_time: 120000
+              default-query-results-region:
+                eviction:
+                  max_entries: 500
+                expiration:
+                  time_to_live: 43200000
+                  max_idle_time: 86400000
+              default-update-timestamps-region:
+                eviction:
+                  max_entries: 50
+                expiration:
+                  time_to_live: 86400000
+                  max_idle_time: 86400000
+              vets:
+                eviction:
+                  max_entries: 5000
+                expiration:
+                  time_to_live: 600000
+                  max_idle_time: 1800000
+              specialties:
+                eviction:
+                  max_entries: 5000
+                expiration:
+                  time_to_live: 600000
+                  max_idle_time: 1800000
+
+        javax:
+          cache:
+            provider: org.ehcache.jsr107.EhcacheCachingProvider
+            uri: classpath:jcache.xml
+
     open-in-view: false
   flyway:
     locations: ["classpath:db/migration/shared", "classpath:db/migration/prod"]

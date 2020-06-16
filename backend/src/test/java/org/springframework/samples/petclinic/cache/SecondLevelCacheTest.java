@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.samples.petclinic.model.Specialty;
 import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.samples.petclinic.util.PostgresqlDbBaseTest;
 import org.springframework.test.annotation.Commit;
@@ -46,6 +47,7 @@ public class SecondLevelCacheTest extends PostgresqlDbBaseTest {
     Assert.assertTrue(secondLevelCache.containsEntity(Vet.class, 100));
     //secondLevelCache.evict(Vet.class, 100);
     session.clear(); // clear first level cache
+    System.out.println("I am here");
     Vet cachedVet = session.get(Vet.class, 100);
   }
 
@@ -84,8 +86,8 @@ public class SecondLevelCacheTest extends PostgresqlDbBaseTest {
     // 2. run with HQL: update Specialty
     Vet vet = session.get(Vet.class, 100);
 
-    session.createQuery("update Vet v set v.firstName = 'new name'").executeUpdate();
-    //session.createQuery("update Specialty s set s.name = 'new specialty'").executeUpdate();
+    //session.createQuery("update Vet v set v.firstName = 'new name'").executeUpdate();
+    session.createQuery("update Specialty s set s.name = 'new specialty'").executeUpdate();
     session.flush();
     session.clear();
 
@@ -108,6 +110,7 @@ public class SecondLevelCacheTest extends PostgresqlDbBaseTest {
     System.out.println(vet.getFirstName());
 
     session.createSQLQuery("UPDATE specialties SET name = 'new specialty name'")
+        .addSynchronizedEntityClass(Specialty.class)
         .executeUpdate();
     session.flush();
     session.clear();

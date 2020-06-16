@@ -1,0 +1,17 @@
+singleServerConfig:
+  idleConnectionTimeout: 10000
+  connectTimeout: 10000
+  timeout: 1000
+  retryAttempts: 1
+  retryInterval: 1000
+  subscriptionsPerConnection: 5
+  address: redis://127.0.0.1:6379
+  subscriptionConnectionMinimumIdleSize: 1
+  subscriptionConnectionPoolSize: 25
+  connectionMinimumIdleSize: 5
+  connectionPoolSize: 100
+  database: 0
+  dnsMonitoringInterval: -1
+threads: 4
+nettyThreads: 8
+codec: !<org.redisson.codec.SnappyCodec> {}

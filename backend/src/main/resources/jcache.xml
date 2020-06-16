@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.ehcache.org/v3"
+        xsi:schemaLocation="
+            http://www.ehcache.org/v3
+            http://www.ehcache.org/schema/ehcache-core.xsd">
+
+    <cache-template name="default">
+        <expiry>
+            <ttl unit="seconds">300</ttl>
+        </expiry>
+        <heap>1024</heap>
+    </cache-template>
+
+    <cache alias="vets" uses-template="default">
+        <expiry>
+            <ttl unit="minutes">1</ttl>
+        </expiry>
+        <heap unit="entries">1000</heap>
+    </cache>
+
+    <cache alias="specialties" uses-template="default">
+        <expiry>
+            <ttl unit="minutes">1</ttl>
+        </expiry>
+        <heap unit="entries">1000</heap>
+    </cache>
+
+    <cache alias="default-query-results-region">
+        <expiry>
+            <ttl unit="seconds">30</ttl>
+        </expiry>
+        <heap unit="entries">10</heap>
+    </cache>
+
+    <cache alias="default-update-timestamps-region">
+        <expiry>
+            <none/>
+        </expiry>
+        <heap unit="entries">100</heap>
+    </cache>
+
+</config>

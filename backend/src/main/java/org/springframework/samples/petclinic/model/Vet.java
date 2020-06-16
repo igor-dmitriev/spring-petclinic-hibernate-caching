@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.Cacheable;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -30,6 +31,9 @@ import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlElement;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Immutable;
 import org.springframework.beans.support.MutableSortDefinition;
 import org.springframework.beans.support.PropertyComparator;
 
@@ -44,15 +48,19 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * @author Arjen Poutsma
  */
 @Entity
+@Cacheable
+@Immutable
+@Cache(usage = CacheConcurrencyStrategy.READ_ONLY, region = "vets")
 @Table(name = "vets")
 public class Vet extends Person {
 
   @Column(name = "is_vip")
   private boolean isVip;
 
-  @ManyToMany(fetch = FetchType.EAGER)
+  @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(name = "vet_specialties", joinColumns = @JoinColumn(name = "vet_id"),
       inverseJoinColumns = @JoinColumn(name = "specialty_id"))
+  @Cache(usage = CacheConcurrencyStrategy.READ_ONLY, region = "specialties")
   private Set<Specialty> specialties;
 
   protected Set<Specialty> getSpecialtiesInternal() {
