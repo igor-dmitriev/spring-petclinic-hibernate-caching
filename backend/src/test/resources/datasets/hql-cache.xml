@@ -1,18 +1,3 @@
 <dataset>
     <vets id="100" first_name="James" last_name="Carter"/>
-    <vets id="101" first_name="Helen" last_name="Leary"/>
-    <vets id="102" first_name="Linda" last_name="Douglas"/>
-    <vets id="103" first_name="Rafael" last_name="Ortega"/>
-    <vets id="104" first_name="Henry" last_name="Stevens"/>
-    <vets id="105" first_name="Sharon" last_name="Jenkins"/>
-
-    <specialties id="100" name="radiology"/>
-    <specialties id="101" name="surgery"/>
-    <specialties id="102" name="dentistry"/>
-
-    <vet_specialties specialty_id="100" vet_id="101"/>
-    <vet_specialties specialty_id="101" vet_id="102"/>
-    <vet_specialties specialty_id="102" vet_id="102"/>
-    <vet_specialties specialty_id="101" vet_id="103"/>
-    <vet_specialties specialty_id="100" vet_id="104"/>
 </dataset>

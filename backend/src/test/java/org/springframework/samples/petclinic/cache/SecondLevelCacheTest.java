@@ -39,7 +39,7 @@ public class SecondLevelCacheTest extends PostgresqlDbBaseTest {
   )
   @Commit
   public void secondLevelCache() {
-    // add @Cacheable,@Cache to Vet
+    // add @Cacheable,@Cache to Vet, Specialty
     Session session = em.unwrap(Session.class);
     Vet vet = em.find(Vet.class, 100);
     org.hibernate.Cache secondLevelCache = session.getSessionFactory().getCache();
@@ -83,7 +83,6 @@ public class SecondLevelCacheTest extends PostgresqlDbBaseTest {
     // 1. run with HQL: update Vet
     // 2. run with HQL: update Specialty
     Vet vet = session.get(Vet.class, 100);
-    System.out.println(vet.getFirstName());
 
     session.createQuery("update Vet v set v.firstName = 'new name'").executeUpdate();
     //session.createQuery("update Specialty s set s.name = 'new specialty'").executeUpdate();
@@ -91,7 +90,6 @@ public class SecondLevelCacheTest extends PostgresqlDbBaseTest {
     session.clear();
 
     Vet cachedCity = session.get(Vet.class, 100);
-    System.out.println(cachedCity.getFirstName());
   }
 
   @Test
