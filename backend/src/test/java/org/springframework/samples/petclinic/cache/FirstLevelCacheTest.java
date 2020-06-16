@@ -74,11 +74,11 @@ public class FirstLevelCacheTest extends PostgresqlDbBaseTest {
   @Commit
   public void bulkUpdate() {
     Vet vet = em.find(Vet.class, 100);
-    System.out.println("before: " + vet.isVip()); // false
+    System.out.println("before: " + vet.isVip());
     em.createQuery("update Vet v set v.isVip = true").executeUpdate();
     vet.setLastName("Dowson");
     em.flush();
-    System.out.println("after: " + vet.isVip()); // true
+    System.out.println("after: " + vet.isVip());
   }
 
 }
